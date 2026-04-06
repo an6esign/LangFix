@@ -39,6 +39,7 @@ jobs:
       - name: Build and publish Tauri release
         uses: tauri-apps/tauri-action@v0.6.0
         with:
+          githubToken: ${{ secrets.GITHUB_TOKEN }}
           tagName: ${{ github.ref_name }}
           releaseName: LangFix ${{ github.ref_name }}
           releaseBody: Automated release for ${{ github.ref_name }}
