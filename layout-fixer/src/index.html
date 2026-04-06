@@ -2,13 +2,211 @@
 <html lang="ru">
   <head>
     <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>LangFix</title>
+    <script src="./main.js" defer></script>
+    <link rel="stylesheet" href="./styles.css" />
   </head>
   <body>
-    <h1>LangFix</h1>
-    <button id="fixBtn">Исправить выделенный текст</button>
-    <p id="result"></p>
+    <div id="captureOverlay" class="captureOverlay" hidden>
+      <div class="captureDialog" tabindex="-1">
+        <div class="captureLabel">Запись хоткея</div>
+        <div class="captureTitle">Нажмите новое сочетание клавиш</div>
+        <div id="capturePreview" class="capturePreview">⌘ + ⇧ + K</div>
+        <div id="captureHint" class="captureHint">
+          Нужен хотя бы один модификатор. Esc отменяет запись.
+        </div>
+      </div>
+    </div>
 
-    <script type="module" src="/main.js"></script>
+    <main class="app">
+      <section class="panel">
+        <header class="hero">
+          <div id="welcomeBadge" class="badge">Первый запуск</div>
+          <div class="hero-grid">
+            <div>
+              <h1>LangFix</h1>
+              <p class="sub">
+                Menu bar-утилита, которая исправляет текст в неверной раскладке
+                по глобальному хоткею.
+              </p>
+            </div>
+            <div class="hotkey-card">
+              <div class="label">Активный хоткей</div>
+              <div id="heroHotkey" class="hotkey">⌘ + ⇧ + K</div>
+              <div class="hint">Его можно изменить во вкладке настроек</div>
+            </div>
+          </div>
+        </header>
+
+        <nav class="tabs" aria-label="Разделы">
+          <button class="tab is-active" data-tab="guide" type="button">Как начать</button>
+          <button class="tab" data-tab="settings" type="button">Настройки</button>
+          <button class="tab" data-tab="about" type="button">О программе</button>
+        </nav>
+
+        <section class="tab-panel is-active" data-panel="guide">
+          <div class="steps">
+            <article class="step">
+              <div class="step-index">1</div>
+              <div>
+                <div class="step-title">Дайте доступ</div>
+                <p id="accessStatus" class="status">
+                  Разрешите LangFix доступ в «Универсальный доступ», иначе
+                  утилита не сможет читать выделение и вставлять исправленный
+                  текст обратно.
+                </p>
+              </div>
+            </article>
+
+            <article class="step">
+              <div class="step-index">2</div>
+              <div>
+                <div class="step-title">Проверьте хоткей</div>
+                <p class="status">
+                  Выделите текст в любом приложении и нажмите
+                  <strong id="guideHotkey">⌘ + ⇧ + K</strong>. LangFix
+                  скопирует выделение, исправит раскладку и вставит результат
+                  обратно.
+                </p>
+              </div>
+            </article>
+
+            <article id="onboardingSection" class="step step-accent">
+              <div class="step-index">3</div>
+              <div>
+                <div class="step-title">После настройки</div>
+                <p class="status">
+                  Окно больше не будет открываться автоматически. LangFix
+                  останется жить в menu bar, а вернуть окно можно через иконку
+                  сверху.
+                </p>
+              </div>
+            </article>
+          </div>
+
+          <div class="actions">
+            <button id="accessBtn" class="secondary">Открыть настройки доступа</button>
+            <button id="fixBtn" type="button">Проверить исправление</button>
+          </div>
+
+          <button id="doneBtn" class="doneBtn" type="button">
+            Готово, спрятать в menu bar
+          </button>
+          <p id="guideResult" class="result" aria-live="polite"></p>
+        </section>
+
+        <section class="tab-panel" data-panel="settings" hidden>
+          <div class="settings-grid">
+            <article class="setting-card">
+              <div class="setting-head">
+                <div>
+                  <div class="setting-title">Глобальный хоткей</div>
+                  <p class="setting-copy">
+                    Нажмите кнопку ниже и введите новое сочетание клавиш.
+                  </p>
+                </div>
+              </div>
+
+              <button id="hotkeyCaptureBtn" class="hotkey-editor" type="button">
+                Нажмите, чтобы записать хоткей
+              </button>
+              <div id="hotkeyHelp" class="field-help">
+                Нужен хотя бы один модификатор: Command, Control, Alt или Shift.
+              </div>
+            </article>
+
+            <article class="setting-card">
+              <div class="setting-head">
+                <div>
+                  <div class="setting-title">Автозапуск</div>
+                  <p class="setting-copy">
+                    Запускать LangFix автоматически после входа в систему.
+                  </p>
+                </div>
+                <label class="switch">
+                  <input id="autostartToggle" type="checkbox" />
+                  <span class="switch-ui"></span>
+                </label>
+              </div>
+            </article>
+
+            <article class="setting-card danger-card">
+              <div class="setting-head">
+                <div>
+                  <div class="setting-title">Сброс настроек</div>
+                  <p class="setting-copy">
+                    Вернуть стандартный хоткей, включить автозапуск и снова
+                    показать onboarding.
+                  </p>
+                </div>
+              </div>
+              <button id="resetBtn" class="secondary danger" type="button">
+                Сбросить до заводских
+              </button>
+            </article>
+          </div>
+
+          <div class="settings-actions">
+            <button id="saveSettingsBtn" type="button">Сохранить настройки</button>
+          </div>
+          <p id="settingsResult" class="result" aria-live="polite"></p>
+        </section>
+
+        <section class="tab-panel" data-panel="about" hidden>
+          <div class="about-layout">
+            <div class="about-appcard">
+              <div class="about-icon-shell">
+                <div class="about-icon">
+                  <span>L</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="about-content">
+              <div class="about-header">
+                <div>
+                  <h2 class="about-title">LangFix</h2>
+                  <p class="about-version">Версия 0.1.0</p>
+                  <p id="aboutUpdateStatus" class="about-update-status">
+                    Проверка обновлений ещё не выполнялась.
+                  </p>
+                </div>
+                <button id="checkUpdatesBtn" class="secondary" type="button">
+                  Проверить обновления
+                </button>
+              </div>
+
+              <div class="about-divider"></div>
+
+              <div class="about-copy">
+                <p class="about-lead">
+                  LangFix исправляет текст, набранный в неверной раскладке, по
+                  глобальному хоткею и живёт в menu bar без лишнего шума.
+                </p>
+                <a
+                  class="about-link"
+                  href="https://github.com/"
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  Открыть страницу проекта
+                </a>
+              </div>
+
+              <div class="about-divider about-divider-bottom"></div>
+
+              <div class="about-footer">
+                <p class="about-meta">Copyright © LangFix, 2026</p>
+                <button id="supportBtn" class="secondary" type="button">
+                  Поддержать проект
+                </button>
+              </div>
+              <p id="aboutResult" class="result" aria-live="polite"></p>
+            </div>
+          </div>
+        </section>
+      </section>
+    </main>
   </body>
 </html>

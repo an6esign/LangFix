@@ -1,33 +1,33 @@
 {
   "$schema": "https://schema.tauri.app/config/2",
-  "productName": "layout-fixer",
+  "productName": "LangFix",
   "version": "0.1.0",
-  "identifier": "com.andreyka.layout-fixer",
+  "identifier": "com.andreyka.langfix",
   "build": {
     "frontendDist": "../src"
   },
   "app": {
-    "withGlobalTauri": true,
     "windows": [
       {
-        "title": "layout-fixer",
-        "width": 800,
-        "height": 600
+        "title": "LangFix",
+        "width": 780,
+        "height": 680,
+        "resizable": false,
+        "visible": false
       }
-    ],
-    "security": {
-      "csp": null
-    }
+    ]
   },
   "bundle": {
     "active": true,
     "targets": "all",
-    "icon": [
-      "icons/32x32.png",
-      "icons/128x128.png",
-      "icons/128x128@2x.png",
-      "icons/icon.icns",
-      "icons/icon.ico"
-    ]
+    "createUpdaterArtifacts": true
+  },
+  "plugins": {
+    "updater": {
+      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IDI3MEJDRjdERDU4NUJBOUQKUldTZHVvWFZmYzhMSnhJK0g0dnl0UEoxNGlxWnJMVEZNMDE1bXVXQkRTVHpqNXh1MXlPZlhjNmgK",
+      "endpoints": [
+        "https://github.com/an6esign/LangFix/releases/latest/download/latest.json"
+      ]
+    }
   }
 }
