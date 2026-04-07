@@ -1,48 +1,70 @@
 # LangFix
 
-LangFix is a macOS menu bar utility that fixes text typed in the wrong keyboard layout by a global hotkey.
+LangFix это маленькая утилита для macOS, которая исправляет текст, набранный в неправильной раскладке.
 
-## Development
+Например:
+
+- `Ghbdtn` -> `Привет`
+- `руддщ` -> `hello`
+
+Приложение живёт в menu bar и работает по горячей клавише.
+
+## Что умеет
+
+- исправляет выделенный текст в любом приложении
+- работает по глобальному хоткею
+- умеет запускаться вместе с системой
+- позволяет поменять хоткей в настройках
+- поддерживает автообновления
+
+## Как пользоваться
+
+1. Установи LangFix
+2. Запусти приложение
+3. Выдай доступ в `Универсальный доступ`
+4. Выдели текст в любом приложении
+5. Нажми горячую клавишу `⌘ + ⇧ + K`
+
+LangFix скопирует выделение, исправит раскладку и вставит текст обратно.
+
+## Установка
+
+Скачай актуальную версию в разделе Releases:
+
+`https://github.com/an6esign/LangFix/releases`
+
+Инструкция по установке из `.dmg` лежит в [INSTALL_DMG.md](/Users/andreyka/Desktop/Programing/Util/layout-fixer/INSTALL_DMG.md).
+
+## Если macOS пишет, что приложение повреждено
+
+Это происходит потому, что сборка пока распространяется без Apple code signing и notarization.
+
+В этом случае:
+
+1. Перемести `LangFix.app` в папку `Applications`
+2. Открой Terminal
+3. Выполни:
 
 ```bash
-npm run tauri dev
+xattr -dr com.apple.quarantine /Applications/LangFix.app
 ```
 
-## Release Packaging
+После этого приложение обычно запускается нормально.
 
-The project is prepared for:
+## Автообновления
 
-- Tauri updater artifacts
-- GitHub Releases based distribution
-- unsigned macOS distribution without App Store
+LangFix умеет проверять новые версии прямо из приложения.
 
-Updater configuration is committed in [tauri.conf.json](/Users/andreyka/Desktop/Programing/Util/layout-fixer/src-tauri/tauri.conf.json) and points to:
+Если доступно обновление:
 
-```text
-https://github.com/an6esign/LangFix/releases/latest/download/latest.json
-```
+- приложение покажет новую версию
+- предложит установить её
+- после установки перезапустится
 
-## GitHub Actions Release
+Для корректной установки лучше запускать LangFix именно из папки `Applications`.
 
-The repository includes a release workflow at [.github/workflows/release.yml](/Users/andreyka/Desktop/Programing/Util/layout-fixer/.github/workflows/release.yml).
+## Обратная связь
 
-It builds signed macOS artifacts on tag push:
+Если приложение не запускается, не меняет текст или хоткей не срабатывает, открой issue в репозитории:
 
-```bash
-git tag v0.1.0
-git push origin v0.1.0
-```
-
-## Required Secrets
-
-GitHub Actions needs these secrets:
-
-- `TAURI_SIGNING_PRIVATE_KEY`
-- `TAURI_SIGNING_PRIVATE_KEY_PASSWORD`
-- `GITHUB_TOKEN` is provided automatically by GitHub Actions
-
-## Notes
-
-- The updater public key is already committed in the app config, so it does not need to be stored as a secret.
-- Only the private updater key must stay secret.
-- Without Apple signing and notarization, macOS may show an untrusted source warning on first launch. Auto-updates can still work.
+`https://github.com/an6esign/LangFix/issues`
