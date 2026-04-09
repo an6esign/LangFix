@@ -2143,10 +2143,11 @@ dependencies = [
 
 [[package]]
 name = "layout-fixer"
-version = "0.1.0"
+version = "0.1.4"
 dependencies = [
  "arboard",
  "enigo",
+ "image",
  "serde",
  "serde_json",
  "tauri",

@@ -11,8 +11,10 @@ use std::{
 
 use arboard::Clipboard;
 use enigo::{Direction, Enigo, Key, Keyboard, Settings};
+use image::ImageReader;
 use serde::{Deserialize, Serialize};
 use tauri::{
+    image::Image,
     menu::{MenuBuilder, MenuItemBuilder},
     tray::{MouseButton, MouseButtonState, TrayIconBuilder, TrayIconEvent},
     AppHandle, Manager, State, WindowEvent,
@@ -508,6 +510,16 @@ fn register_shortcut(app: &AppHandle, shortcut_str: &str) -> Result<(), String> 
     Err("Не удалось зарегистрировать хоткей.".to_string())
 }
 
+fn load_tray_icon() -> Option<Image<'static>> {
+    let bytes = include_bytes!("../icons/tray-template.png");
+    let cursor = std::io::Cursor::new(bytes.as_slice());
+    let reader = ImageReader::new(cursor).with_guessed_format().ok()?;
+    let image = reader.decode().ok()?.to_rgba8();
+    let (width, height) = image.dimensions();
+
+    Some(Image::new_owned(image.into_raw(), width, height))
+}
+
 fn main() {
     tauri::Builder::default()
         .plugin(tauri_plugin_autostart::Builder::new().app_name("LangFix").build())
@@ -568,7 +580,9 @@ fn main() {
                     }
                 });
 
-            if let Some(icon) = app.default_window_icon().cloned() {
+            if let Some(icon) = load_tray_icon() {
+                tray = tray.icon(icon).icon_as_template(true);
+            } else if let Some(icon) = app.default_window_icon().cloned() {
                 tray = tray.icon(icon).icon_as_template(true);
             }
 
